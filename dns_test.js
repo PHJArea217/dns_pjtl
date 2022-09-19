@@ -1,6 +1,18 @@
 const fake_dns = require('./universal-relay/fake_dns.js');
 const endpoint = require('./universal-relay/endpoint.js');
 const dns_helpers = require('./universal-relay/dns_helpers.js');
+const acme_map = require('./acme_map.json');
+var acme_manager = dns_helpers.make_acme_challenge_handler();
+const acme_cname_map = new Map();
+const acme_txt_map = new Map();
+for (let d of acme_map.acme_cname_map) {
+	acme_cname_map.set(d[0], d[1] + ".acme" + String(d[2]) + ".peterjin.org.");
+}
+for (let d of acme_map.acme_txt_map) {
+	for (let k of d[1])
+		acme_manager.addKey(k);
+	acme_txt_map.set(d[0], acme_manager.getAcmeChallengeTXTFunc(d[1]));
+}
 const express = require('express');
 var domain_manager = dns_helpers.make_soa_ns_handler('apps-vm8.srv.peterjin.org. dns.peterjin.org. 1 10000 10000 10000 120', ['apps-vm8.srv.peterjin.org.'/*,'apps-vm16-alt.srv.peterjin.org.'*/]);
 domain_manager.addDomain('0.a.6.0.8.0.2.0.6.2.ip6.arpa');
@@ -10,7 +22,11 @@ domain_manager.addDomain('ipv6-things.com');
 domain_manager.addDomain('ipv6.bible');
 domain_manager.addDomain('peterjin.com');
 domain_manager.addDomain('rdns.peterjin.org');
-var acme_manager = dns_helpers.make_acme_challenge_handler();
+domain_manager.addDomain('acme3.peterjin.org');
+domain_manager.addDomain('acme5.peterjin.org');
+domain_manager.addDomain('acme8.peterjin.org');
+domain_manager.addDomain('acme15.peterjin.org');
+domain_manager.addDomain('acme16.peterjin.org');
 var pdns_app = express();
 var acme_app = express();
 acme_app.use(express.urlencoded());
@@ -36,6 +52,22 @@ var m = fake_dns.make_urelay_ip_domain_map(0x100000000000000n, function(domain_p
 	}
 	let result = [];
 	result.push(...(domain_manager.getSOANS(ep)));
+	let ep_domain_name = ep.getDomainString();
+	if (ep_domain_name.startsWith('_acme-challenge.')) {
+		let cname_result = acme_cname_map.get(ep_domain_name.substring(16));
+		if (cname_result) {
+			result.push({qtype: 'CNAME', content: cname_result});
+			return result;
+		}
+	}
+	ep.getSubdomainsOfThen(['org', 'peterjin'], Infinity, function (res, t) {
+		if (res[0].startsWith('acme') && (res.length === 2)) {
+			let txt_result = acme_txt_map.get(res[1]);
+			if (txt_result) {
+				result.push(txt_result()[0]);
+			}
+		}
+	});
 	ep.getSubdomainsOfThen(['net', 'as398565'], Infinity, function (res, t) {
 		if (res[0] === 'rdns') {
 			let s = res.slice(1).join('|');

@@ -1,0 +1,24 @@
+{
+	"acme_cname_map": [
+		["a-0-197646.rdns.as398565.net", "i6t-40e-rdns", 8],
+		["a-0-197647.rdns.as398565.net", "i6t-40f-rdns", 8],
+		["ipv6-things.com", "i6t-root", 8],
+		["scp.ipv6-things.com", "i6t-scp", 8],
+		["colors.ipv6-things.com", "i6t-colors", 8],
+		["misc.ipv6-things.com", "i6t-misc", 8],
+		["ptable.ipv6-things.com", "i6t-ptable", 8],
+		["ttgen.as398565.net", "ttgen", 8],
+		["ipv6.bible", "ipv6-bible", 8]
+	],
+	"acme_txt_map": [
+		["i6t-40e-rdns", ["a-0-197646.rdns.as398565.net"]],
+		["i6t-40f-rdns", ["a-0-197647.rdns.as398565.net"]],
+		["i6t-root", ["ipv6-things.com"]],
+		["i6t-scp", ["scp.ipv6-things.com"]],
+		["i6t-colors", ["colors.ipv6-things.com"]],
+		["i6t-misc", ["misc.ipv6-things.com"]],
+		["i6t-ptable", ["ptable.ipv6-things.com"]],
+		["ttgen", ["ttgen.as398565.net"]],
+		["ipv6-bible", ["ipv6.bible"]]
+	]
+}
