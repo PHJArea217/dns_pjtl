@@ -161,5 +161,16 @@ var m = fake_dns.make_urelay_ip_domain_map(0x100000000000000n, function(domain_p
 	return result;
 }, {domainList: domain_manager.domainList, haveDomainMetadata: true});
 m.make_pdns_express_app(pdns_app, null, true);
-pdns_app.listen({host: '127.0.0.10', port: 81});
-// acme_app.listen('/home/henrie/gitprojects/universal-relay/test/acme.sock');
+switch (process.argv[2]) {
+	case 'a':
+		pdns_app.listen({fd: 3});
+		acme_app.listen({fd: 4});
+		break;
+	case 'b':
+		pdns_app.listen({fd: +process.env.CTRTOOL_NS_OPEN_FILE_FD_0});
+		acme_app.listen({fd: +process.env.CTRTOOL_NS_OPEN_FILE_FD_1});
+		break;
+	default:
+		pdns_app.listen({host: '127.0.0.10', port: 81});
+		// acme_app.listen('/home/henrie/gitprojects/universal-relay/test/acme.sock');
+}
