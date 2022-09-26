@@ -62,7 +62,7 @@ var m = fake_dns.make_urelay_ip_domain_map(0x100000000000000n, function(domain_p
 		}
 	}
 	ep.getSubdomainsOfThen(['org', 'peterjin'], Infinity, function (res, t) {
-		if (res[0].startsWith('acme') && (res.length === 2)) {
+		if ((res.length === 2) && res[0].startsWith('acme')) {
 			let txt_result = acme_txt_map.get(res[1]);
 			if (txt_result) {
 				result.push(...(txt_result()[0]));
