@@ -43,7 +43,7 @@ function make_prefix_map() {
 	};
 	_result.lookup_domain = (domainName) => {
 		let match_regexp = new RegExp('^' + _result.prefix + '0*([0-9]+)$');
-		let match_result = match_regexp.match(domainName);
+		let match_result = domainName.match(match_regexp);
 		if (match_result) {
 			try {
 				let num = BigInt(match_result[1]);

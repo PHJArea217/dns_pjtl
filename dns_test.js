@@ -1,6 +1,7 @@
 const fake_dns = require('./universal-relay/fake_dns.js');
 const endpoint = require('./universal-relay/endpoint.js');
 const dns_helpers = require('./universal-relay/dns_helpers.js');
+const i6t_object_map = require('./i6t_object_map.js');
 const acme_map = require('./acme_map.json');
 var acme_manager = dns_helpers.make_acme_challenge_handler();
 const acme_cname_map = new Map();
@@ -64,7 +65,20 @@ var m = fake_dns.make_urelay_ip_domain_map(0x100000000000000n, function(domain_p
 		if (res[0].startsWith('acme') && (res.length === 2)) {
 			let txt_result = acme_txt_map.get(res[1]);
 			if (txt_result) {
-				result.push(txt_result()[0]);
+				result.push(...(txt_result()[0]));
+			}
+		}
+	});
+	ep.getSubdomainsOfThen(['com', 'ipv6-things'], Infinity, function (res, t) {
+		if (res.length === 2) {
+			switch (res[0]) {
+				case 'scp':
+					let r = i6t_object_map.lookup_multi(res[1], 'lookup_domain', [i6t_object_map.scp_map]);
+					if (r) {
+						let ip_ep = new endpoint.Endpoint().setIPBigInt(0x26020806a003040e0000000001000000n | r[0]);
+						result.push({qtype: 'AAAA', content: ip_ep.getIPString()});
+					}
+					break;
 			}
 		}
 	});
@@ -147,5 +161,5 @@ var m = fake_dns.make_urelay_ip_domain_map(0x100000000000000n, function(domain_p
 	return result;
 }, {domainList: domain_manager.domainList, haveDomainMetadata: true});
 m.make_pdns_express_app(pdns_app, null, true);
-pdns_app.listen({host: '127.0.0.10', port: 8181});
+pdns_app.listen({host: '127.0.0.10', port: 81});
 // acme_app.listen('/home/henrie/gitprojects/universal-relay/test/acme.sock');
