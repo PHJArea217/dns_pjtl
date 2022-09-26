@@ -15,7 +15,7 @@ for (let d of acme_map.acme_txt_map) {
 	acme_txt_map.set(d[0], acme_manager.getAcmeChallengeTXTFunc(d[1]));
 }
 const express = require('express');
-var domain_manager = dns_helpers.make_soa_ns_handler('apps-vm8.srv.peterjin.org. dns.peterjin.org. 1 10000 10000 10000 120', ['apps-vm8.srv.peterjin.org.'/*,'apps-vm16-alt.srv.peterjin.org.'*/]);
+var domain_manager = dns_helpers.make_soa_ns_handler('apps-vm8.srv.peterjin.org. dns.peterjin.org. 1 10000 10000 10000 120', ['apps-vm8.srv.peterjin.org.','apps-vm3.srv.peterjin.org.'/*,'apps-vm16-alt.srv.peterjin.org.'*/]);
 domain_manager.addDomain('0.a.6.0.8.0.2.0.6.2.ip6.arpa');
 domain_manager.addDomain('208.161.23.in-addr.arpa');
 domain_manager.addDomain('as398565.net');
@@ -25,7 +25,7 @@ domain_manager.addDomain('peterjin.com');
 domain_manager.addDomain('rdns.peterjin.org');
 domain_manager.addDomain('acme3.peterjin.org');
 domain_manager.addDomain('acme5.peterjin.org');
-domain_manager.addDomain('acme8.peterjin.org');
+domain_manager.addDomain('acme8.peterjin.org', null, ['apps-vm8.srv.peterjin.org.']);
 domain_manager.addDomain('acme15.peterjin.org');
 domain_manager.addDomain('acme16.peterjin.org');
 var pdns_app = express();
